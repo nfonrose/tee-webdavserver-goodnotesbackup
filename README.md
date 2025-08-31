@@ -80,6 +80,9 @@ docker run --rm -it -v /opt/teevity/certs:/etc/letsencrypt -v /opt/teevity/certb
   -d teevity-labs.ovh
 ```
 
+
+### Manually execute some maintenance actions
+
 To renew the HTTPS certificate 
 ```bash
 docker run --rm -v /opt/teevity/certs:/etc/letsencrypt -v /opt/teevity/certbot:/var/www/certbot \
@@ -87,6 +90,15 @@ docker run --rm -v /opt/teevity/certs:/etc/letsencrypt -v /opt/teevity/certbot:/
   --quiet \
   --deploy-hook "docker exec teevity-nginx nginx -s reload"
 ```
+
+To perform the GCS backup
+```bash
+docker exec -it teevity-apache /usr/local/bin/scripts/backup-to-gcs.sh nicolas gs://mybucket-daily
+docker exec -it teevity-apache /usr/local/bin/scripts/backup-to-gcs.sh malo gs://mybucket-weekly
+```
+
+
+### CRON the maintenance actions
 
 To setup the CRON to renew the HTTPS cert
 ```bash
@@ -96,6 +108,14 @@ To setup the CRON to renew the HTTPS cert
             --quiet \
             --deploy-hook "docker exec teevity-nginx nginx -s reload"
 ```
+
+
+### Execute the WebDAV server
+
+cp dot-env.example .env
+
+
+### Manually perform backups to GCS
 
 To perform the GCS backup
 ```bash
