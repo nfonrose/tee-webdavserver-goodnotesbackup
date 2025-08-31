@@ -45,11 +45,13 @@ The directory structure on the host is:
 Execute this to initiate the directory structure
 ```bash
 # Create folder structure
-sudo mkdir -p /opt/teevity/{apache/{logs,webdav/{nicolas,malo}},nginx/logs,certs,certbot}
-# TODO - Should we use '1000' (GUID of the httpd user in the container) or `sudo chown -R $USER:$USER ...` as suggested by ChatGPT
-sudo chown -R 1000:1000 /opt/teevity/apache
-sudo chown -R 1000:1000 /opt/teevity/nginx
-sudo chown -R 1000:1000 /opt/teevity/certs
+sudo mkdir -p /opt/teevity/{apache/{logs,webdav/{nicolas,malo}},ngidocker exec -it teevity-apache id www-datanx/logs,certs,certbot}
+sudo touch /opt/teevity/apache/webdav/DAVLockDB
+# We use 33 which is the GUID of the httpd user in the container (found using `docker exec -it teevity-apache id www-data`)
+sudo chown -R 33:33 /opt/teevity/apache
+sudo chown -R 33:33 /opt/teevity/nginx
+sudo chown -R 33:33 /opt/teevity/certs
+sudo chown -R 33:33 /opt/teevity/certbot
 ```
 
 Create some users (by defining their password)
@@ -125,8 +127,28 @@ To setup the CRON to renew the HTTPS cert
 
 ### Execute the WebDAV server
 
+On the host machine, if the above setup steps have been executed, you can start the WebDAV server with:
+```bash
+# Use the example environment values as your .env values (you can update this as you need to)
 cp dot-env.example .env
+# Start the composition
+docker compose up -d --build
+```
 
+Check if everything is running with:
+```bash
+docker ps -a
+```
+
+Check the logs for a particular service with:
+```bash
+docker logs teevity-apache
+```
+
+Stop the service with:
+```bash
+docker compose down
+```
 
 ### Manually perform backups to GCS
 
