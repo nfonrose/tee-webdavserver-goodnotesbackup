@@ -23,16 +23,6 @@ services:
     networks:
       - teevity-net
 
-  certbot:
-    image: certbot/certbot
-    container_name: teevity-certbot
-    volumes:
-      - /opt/teevity/certs:/etc/letsencrypt
-      - /var/www/certbot:/var/www/certbot
-    entrypoint: ""
-    networks:
-      - teevity-net
-
 networks:
   teevity-net:
     driver: bridge

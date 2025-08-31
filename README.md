@@ -45,7 +45,7 @@ The directory structure on the host is:
 Execute this to initiate the directory structure
 ```bash
 # Create folder structure
-sudo mkdir -p /opt/teevity/{apache/{logs,webdav/{nicolas,malo}},nginx/logs,certs}
+sudo mkdir -p /opt/teevity/{apache/{logs,webdav/{nicolas,malo}},nginx/logs,certs,certbot}
 # TODO - Should we use '1000' (GUID of the httpd user in the container) or `sudo chown -R $USER:$USER ...` as suggested by ChatGPT
 sudo chown -R 1000:1000 /opt/teevity/apache
 sudo chown -R 1000:1000 /opt/teevity/nginx
@@ -71,9 +71,30 @@ docker run --rm -it \
   -d teevity-labs.ovh
 ```
 
-To setup the CRON for the HTTPS certificate auto-renewal
+To get the initial HTTPS certificate (using the 'webroot' challenge (/.well-known/acme-challenge) served by nginx)
 ```bash
-0 3 * * * docker run --rm -v /opt/teevity/certs:/etc/letsencrypt -v /var/www/certbot:/var/www/certbot certbot/certbot renew --quiet --deploy-hook "docker-compose restart nginx"
+docker run --rm -it -v /opt/teevity/certs:/etc/letsencrypt -v /opt/teevity/certbot:/var/www/certbot \
+  certbot/certbot certonly \
+  --webroot \
+  --webroot-path=/var/www/certbot \
+  -d teevity-labs.ovh
+```
+
+To renew the HTTPS certificate 
+```bash
+docker run --rm -v /opt/teevity/certs:/etc/letsencrypt -v /opt/teevity/certbot:/var/www/certbot \
+  certbot/certbot renew \
+  --quiet \
+  --deploy-hook "docker exec teevity-nginx nginx -s reload"
+```
+
+To setup the CRON to renew the HTTPS cert
+```bash
+0 3 * * * docker run --rm \
+            -v /opt/teevity/certs:/etc/letsencrypt \
+            -v /opt/teevity/certbot:/var/www/certbot  certbot/certbot renew \
+            --quiet \
+            --deploy-hook "docker exec teevity-nginx nginx -s reload"
 ```
 
 To perform the GCS backup
