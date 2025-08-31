@@ -135,6 +135,10 @@ cp dot-env.example .env
 docker compose up -d --build
 ```
 
+Configure GoodNotes to point to `https://YOURIP:YOURPORT/webdav/` (to be consistent with the Apache and Nginx configurations)
+
+#### Check what's happening
+
 Check if everything is running with:
 ```bash
 docker ps -a
@@ -150,7 +154,7 @@ Stop the service with:
 docker compose down
 ```
 
-### Manually perform backups to GCS
+#### Manually perform backups to GCS
 
 To perform the GCS backup
 ```bash
