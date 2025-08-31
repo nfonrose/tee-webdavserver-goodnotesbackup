@@ -1,0 +1,38 @@
+
+services:
+  apache:
+    build: ./apache
+    container_name: teevity-apache
+    volumes:
+      - /opt/teevity/apache/webdav:/usr/local/apache2/htdocs/webdav:rw
+      - /opt/teevity/apache/logs:/usr/local/apache2/logs:rw
+    networks:
+      - teevity-net
+
+  nginx:
+    build: ./nginx
+    container_name: teevity-nginx
+    depends_on:
+      - apache
+    volumes:
+      - /opt/teevity/nginx/logs:/var/log/nginx
+      - /opt/teevity/certs:/etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - teevity-net
+
+  certbot:
+    image: certbot/certbot
+    container_name: teevity-certbot
+    volumes:
+      - /opt/teevity/certs:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
+    entrypoint: ""
+    networks:
+      - teevity-net
+
+networks:
+  teevity-net:
+    driver: bridge
