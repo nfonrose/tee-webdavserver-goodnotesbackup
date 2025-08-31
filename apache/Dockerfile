@@ -2,11 +2,8 @@ FROM httpd:2.4
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install -y apache2-utils cron && \
+    apt-get install -y apache2-utils curl gnupg lsb-release && \
     rm -rf /var/lib/apt/lists/*
-
-# Enable WebDAV modules
-RUN a2enmod dav dav_fs auth_digest auth_basic
 
 # Copy custom WebDAV config
 COPY conf/extra/webdav.conf /usr/local/apache2/conf/extra/webdav.conf
