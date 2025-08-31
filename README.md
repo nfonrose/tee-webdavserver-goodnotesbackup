@@ -97,6 +97,14 @@ docker exec -it teevity-apache /usr/local/bin/scripts/backup-to-gcs.sh nicolas g
 docker exec -it teevity-apache /usr/local/bin/scripts/backup-to-gcs.sh malo gs://mybucket-weekly
 ```
 
+Generate a self-signed, temporary certificate
+```bash
+mkdir -p /opt/teevity/certs
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /opt/teevity/certs/selfsigned.key \
+  -out /opt/teevity/certs/selfsigned.crt \
+  -subj "/CN=localhost"
+```
 
 ### CRON the maintenance actions
 
@@ -107,6 +115,11 @@ To setup the CRON to renew the HTTPS cert
             -v /opt/teevity/certbot:/var/www/certbot  certbot/certbot renew \
             --quiet \
             --deploy-hook "docker exec teevity-nginx nginx -s reload"
+```
+
+To setup the CRON to renew the HTTPS cert
+```bash
+... TODO
 ```
 
 
