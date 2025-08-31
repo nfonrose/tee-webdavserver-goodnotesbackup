@@ -8,7 +8,7 @@ WedDav Server for GoodNotes backup (with monitoring dashboard and restore proced
 
 ## Usage
 
-GoodNotes should point to `https://teevity-labs.ovh/webdav/username`
+GoodNotes should point to `https://teevity-labs.ovh/webdav/` (or `https://webdav.teevity.com/webdav/`)
 
 
 
