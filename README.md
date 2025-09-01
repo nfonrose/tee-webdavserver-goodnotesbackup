@@ -45,8 +45,8 @@ The directory structure on the host is:
 Execute this to initiate the directory structure
 ```bash
 # Create folder structure
-sudo mkdir -p /opt/teevity/{apache/{logs,webdav/{nicolas,malo}},ngidocker exec -it teevity-apache id www-datanx/logs,certs,certbot}
-sudo touch /opt/teevity/apache/webdav/DAVLockDB
+sudo mkdir -p /opt/teevity/{apache/{logs,auth,davlocks,webdav/{nicolas,malo}},nginx/logs,certs,certbot}
+sudo touch /opt/teevity/apache/webdav/DAVLockDB.lock
 # We use 33 which is the GUID of the httpd user in the container (found using `docker exec -it teevity-apache id www-data`)
 sudo chown -R 33:33 /opt/teevity/apache
 sudo chown -R 33:33 /opt/teevity/nginx
@@ -160,4 +160,16 @@ To perform the GCS backup
 ```bash
 docker exec -it teevity-apache /usr/local/bin/scripts/backup-to-gcs.sh nicolas gs://mybucket-daily
 docker exec -it teevity-apache /usr/local/bin/scripts/backup-to-gcs.sh malo gs://mybucket-weekly
+```
+
+
+### DNS name for the server
+
+#### Specific to the 'teevity.com' case
+
+Update the DNS Zone inside Gandi.net so that webdav.teevity.com is resolved by Google DNS (and not Gandi)
+
+Using GCP to define the DNS entry (for `webdav.teevity.com` in our case)
+```bash
+gcloud dns --project=teevity.com:teevity-cloudcost-backend-prod record-sets create webdav.teevity.com. --zone="teevity-com" --type="A" --ttl="300" --rrdatas="176.157.110.229"
 ```

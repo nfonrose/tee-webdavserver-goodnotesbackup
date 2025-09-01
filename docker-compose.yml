@@ -6,6 +6,8 @@ services:
     volumes:
       - /opt/teevity/apache/webdav:/usr/local/apache2/htdocs/webdav:rw
       - /opt/teevity/apache/logs:/usr/local/apache2/logs:rw
+      - /opt/teevity/apache/auth:/usr/local/apache2/auth:rw
+      - /opt/teevity/apache/davlocks:/usr/local/apache2/davlocks:rw
     networks:
       - teevity-net
 
