@@ -1,0 +1,17 @@
+
+services:
+  nginx:
+    build: ./nginx
+    container_name: teevity-nginx-koofr-reverseproxy
+    volumes:
+      - /opt/teevity/nginx/logs:/var/log/nginx
+      - /opt/teevity/certs:/etc/letsencrypt/
+    ports:
+      - "${TEE_WEBDAV_HTTP_PORT:-7580}:80"
+      - "${TEE_WEBDAV_HTTPS_PORT:-7543}:443"
+    networks:
+      - teevity-net
+
+networks:
+  teevity-net:
+    driver: bridge

@@ -20,7 +20,7 @@ services:
       - apache
     volumes:
       - ${TEE_OPT_BASEPATH}/nginx/logs:/var/log/nginx
-      - ${TEE_OPT_BASEPATH}/certs:/etc/letsencrypt
+      - ${TEE_OPT_BASEPATH}/certs/live/teevity.com:/etc/letsencrypt
     ports:
       - "${TEE_WEBDAV_HTTP_PORT:-7080}:80"
       - "${TEE_WEBDAV_HTTPS_PORT:-7443}:443"
