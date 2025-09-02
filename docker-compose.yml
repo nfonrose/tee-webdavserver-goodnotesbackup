@@ -17,8 +17,6 @@ services:
     volumes:
       - /opt/teevity/nginx/logs:/var/log/nginx
       - /opt/teevity/certs:/etc/letsencrypt
-      - /opt/teevity/certs/selfsigned.crt:/etc/letsencrypt/live/teevity-labs.ovh/fullchain.pem:ro
-      - /opt/teevity/certs/selfsigned.key:/etc/letsencrypt/live/teevity-labs.ovh/privkey.pem:ro      
     ports:
       - "${TEE_WEBDAV_HTTP_PORT:-7580}:80"
       - "${TEE_WEBDAV_HTTPS_PORT:-7543}:443"
