@@ -4,12 +4,14 @@ services:
     build: ./apache
     container_name: teevity-apache
     volumes:
-      - /opt/teevity/apache/webdav:/usr/local/apache2/htdocs/webdav:rw
-      - /opt/teevity/apache/logs:/usr/local/apache2/logs:rw
-      - /opt/teevity/apache/auth:/usr/local/apache2/auth:rw
-      - /opt/teevity/apache/davlocks:/usr/local/apache2/davlocks:rw
+      - ${TEE_OPT_BASEPATH}/apache/webdav:/usr/local/apache2/htdocs/webdav:rw
+      - ${TEE_OPT_BASEPATH}/apache/logs:/usr/local/apache2/logs:rw
+      - ${TEE_OPT_BASEPATH}/apache/auth:/usr/local/apache2/auth:rw
+      - ${TEE_OPT_BASEPATH}/apache/davlocks:/usr/local/apache2/davlocks:rw
     networks:
       - teevity-net
+    ports:
+      - "6080:80"
 
   nginx:
     build: ./nginx
@@ -17,13 +19,37 @@ services:
     depends_on:
       - apache
     volumes:
-      - /opt/teevity/nginx/logs:/var/log/nginx
-      - /opt/teevity/certs:/etc/letsencrypt
+      - ${TEE_OPT_BASEPATH}/nginx/logs:/var/log/nginx
+      - ${TEE_OPT_BASEPATH}/certs:/etc/letsencrypt
     ports:
       - "${TEE_WEBDAV_HTTP_PORT:-7580}:80"
       - "${TEE_WEBDAV_HTTPS_PORT:-7543}:443"
     networks:
       - teevity-net
+    expose:
+      - "443"
+      - "80"
+
+  mitmproxy:
+    image: mitmproxy/mitmproxy:latest
+    container_name: teevity-mitmproxy
+    depends_on:
+      - apache
+    command: >
+      mitmweb
+      --mode reverse:http://teevity-apache:80
+      --listen-host 0.0.0.0
+      --listen-port 443
+      --web-host 0.0.0.0
+      --web-port 8081
+      --set web_password='notARealSecret'
+    networks:
+      - teevity-net
+    ports:
+      - "7773:443"   # HTTPS traffic intercepted
+      - "7780:8081"  # Web UI for inspection
+    volumes:
+      - ${TEE_OPT_BASEPATH}/mitmproxy:/home/mitmproxy  # logs, saved flows, certs
 
 networks:
   teevity-net:
