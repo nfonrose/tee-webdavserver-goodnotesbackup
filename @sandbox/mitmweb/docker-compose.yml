@@ -1,0 +1,38 @@
+
+services:
+  apache:
+    build: ./apache
+    container_name: teevity-apache
+    networks:
+      - teevity-net
+    volumes:
+      - ${TEE_OPT_BASEPATH}/apache/logs:/usr/local/apache2/logs:rw
+    expose:
+      - "80"
+    ports:
+      - "6080:80"
+
+  mitmproxy:
+    image: mitmproxy/mitmproxy:latest
+    container_name: teevity-mitmproxy
+    depends_on:
+      - apache
+    command: >
+      mitmweb
+      --mode reverse:http://teevity-apache:80
+      --listen-host 0.0.0.0
+      --listen-port 443
+      --web-host 0.0.0.0
+      --web-port 8081
+      --set web_password='notARealSecret'
+    networks:
+      - teevity-net
+    ports:
+      - "7773:443"   # Port for traffic intercepted
+      - "7780:8081"  # Web UI for inspection
+    volumes:
+      - ${TEE_OPT_BASEPATH}/teevity/mitmproxy:/home/mitmproxy/.mitmproxy
+
+networks:
+  teevity-net:
+    driver: bridge
