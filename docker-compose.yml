@@ -35,6 +35,7 @@ services:
     container_name: teevity-mitmproxy
     depends_on:
       - apache
+    entrypoint: ["/opt/teevity/combine-privkey-and-cert-entrypoint.sh"]
     command: >
       mitmweb
       --mode reverse:http://teevity-apache:80
@@ -43,6 +44,8 @@ services:
       --web-host 0.0.0.0
       --web-port 8081
       --set web_password='notARealSecret'
+      --set block_global=false
+      --certs *.teevity.com=/opt/teevity/certs/combined-key-cert.pem
     networks:
       - teevity-net
     ports:
@@ -50,6 +53,8 @@ services:
       - "7780:8081"  # Web UI for inspection
     volumes:
       - ${TEE_OPT_BASEPATH}/mitmproxy:/home/mitmproxy  # logs, saved flows, certs
+      - ${TEE_OPT_BASEPATH}/certs/live/teevity.com/:/opt/teevity/certs  # certifcates file directory
+      - ./mitmweb/scripts/combine-privkey-and-cert-entrypoint.sh:/opt/teevity/combine-privkey-and-cert-entrypoint.sh:ro
 
 networks:
   teevity-net:
