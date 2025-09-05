@@ -1,6 +1,6 @@
 # Default values for the Docker composition
 # IMPORTANT: Copy it to `.env` in order for it to be taken into account by `docker compose up`
 # REMARK: A `.env` file can be overriden with inline definitions `TEE_OPT_BASEPATH=/Users/teevity/opt/teevity docker compose up -d`
-TEE_WEBDAV_HTTP_PORT=7580
-TEE_WEBDAV_HTTPS_PORT=7543
+TEE_WEBDAV_HTTP_PORT=7080
+TEE_WEBDAV_HTTPS_PORT=7443
 TEE_OPT_BASEPATH=/opt/teevity
